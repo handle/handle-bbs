@@ -16,6 +16,7 @@ from datetime import datetime
 
 
 class RedisData(object):
+    @staticmethod
     def set_topics():
         '''使用redis记录'''
         pipe = redis_data.pipeline()
@@ -25,11 +26,13 @@ class RedisData(object):
         pipe.hincrby(user, 'all:topic', 1)
         pipe.execute()
 
+    @staticmethod
     def set_replies(qid):
         pipe = redis_data.pipeline()
         pipe.hincrby('topic:%s' % str(qid), 'replies', 1)
         pipe.execute()
 
+    @staticmethod
     def set_read_count(qid):
         redis_data.hincrby('topic:%s' % str(qid), 'read', 1)
 
@@ -42,10 +45,10 @@ class RedisData(object):
     def set_love(user, num):
         redis_data.hincrby('user:%s' % str(user.id), 'love', num)
 
-    def set_user():
+    def set_user(self):
         redis_data.hincrby('user:%s' % str(current_user.id), 'topic', 1)
 
-    def set_user_all():
+    def set_user_all(self):
         redis_data.hincrby('user:%s' % str(current_user.id), 'all_topic', 1)
 
     # def set_email_send():

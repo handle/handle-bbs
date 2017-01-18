@@ -33,6 +33,7 @@ class BaseModelView(ModelView):
     def is_accessible(self):
         permission = Permission(RoleNeed('super'))
         return permission.can()
+        # return True
 
     def inaccessible_callback(self, name, **kwargs):
         abort(404)

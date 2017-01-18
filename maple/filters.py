@@ -11,16 +11,20 @@
 # Description:
 # **************************************************************************
 from datetime import datetime
+import time
+
+from flask_login import current_user
 from maple.settings import setting
 from maple.topic.models import Reply, Topic
 from maple.user.models import User
 from flask import Markup, g
 from misaka import Markdown, HtmlRenderer
 from pygments import highlight
-from pygments.formatters import HtmlFormatter
+from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 from bleach import clean
 from maple.extension import redis_data, cache
+import pytz
 
 
 def safe_clean(text):
@@ -29,8 +33,68 @@ def safe_clean(text):
     styles = ['color']
     return Markup(clean(text, tags=tags, attributes=attrs, styles=styles))
 
-
 class Filters(object):
+
+    def show_time(self):
+        from flask_babelex import format_datetime
+        if g.user.is_authenticated:
+            return 'LOCALE:' + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+        else:
+            return 'UTC:' + format_datetime(datetime.now(pytz.timezone('Asia/Shanghai')))
+
+    def notice_count(self):
+        from maple.forums.models import Notice
+        if current_user.is_authenticated:
+            count = Notice.query.filter_by(
+                rece_id=g.user.id, is_read=False).count()
+            if count > 0:
+                return count
+        return None
+
+    @cache.memoize(timeout=60)
+    def hot_tags(self):
+        from maple.tag.models import Tags
+        tags = Tags.query.order_by(Tags.time.desc()).limit(9).all()
+        return tags
+
+    @cache.memoize(timeout=60)
+    def recent_tags(self):
+        from maple.tag.models import Tags
+        tags = Tags.query.order_by(Tags.time.desc()).limit(12).all()
+        return tags
+
+
+    class Title(object):
+        title = setting['title']
+        picture = setting['picture']
+        description = setting['description']
+
+    @staticmethod
+    def get_user_infor(name):
+        user = User.query.filter(User.username == name).first()
+        return user
+
+    @staticmethod
+    def is_online(username):
+        from maple.main.records import load_online_sign_users
+        online_users = load_online_sign_users()
+        if username in online_users:
+            return True
+        return False
+
+    @staticmethod
+    @cache.memoize(timeout=30)
+    def is_collected(topicId):
+        from maple.topic.models import CollectTopic
+        from flask_login import current_user
+        for collect in current_user.collects:
+            cid = CollectTopic.query.filter_by(
+                collect_id=collect.id, topic_id=topicId).first()
+            if cid is not None:
+                return True
+        return False
+
+    @staticmethod
     def safe_markdown(text):
         class HighlighterRenderer(HtmlRenderer):
             def blockcode(self, text, lang):
@@ -45,8 +109,8 @@ class Filters(object):
         renderer = HighlighterRenderer()
         md = Markdown(renderer, extensions=('fenced-code', ))
         return Markup(md(safe_clean(text)))
-        # return Markup(md(text))
 
+    @staticmethod
     def timesince(dt, default="just now"):
         from flask_babelex import format_datetime
         now = datetime.utcnow()
@@ -70,22 +134,7 @@ class Filters(object):
 
         return default
 
-    def show_time():
-        from flask_babelex import format_datetime
-        if g.user.is_authenticated:
-            return 'LOCALE:' + format_datetime(datetime.utcnow())
-        else:
-            return 'UTC:' + format_datetime(datetime.utcnow())
-
-    def get_user_infor(name):
-        user = User.query.filter(User.username == name).first()
-        return user
-
-    @cache.memoize(timeout=60)
-    def get_last_reply(uid):
-        reply = Reply.query.join(Reply.topic).filter(Topic.id == uid).first()
-        return reply
-
+    @staticmethod
     @cache.memoize(timeout=30)
     def get_read_count(id):
         read = redis_data.hget('topic:%s' % str(id), 'read')
@@ -100,52 +149,14 @@ class Filters(object):
             replies = int(replies)
         return replies, read
 
-    @cache.memoize(timeout=30)
-    def is_collected(topicId):
-        from maple.topic.models import CollectTopic
-        from flask_login import current_user
-        for collect in current_user.collects:
-            cid = CollectTopic.query.filter_by(
-                collect_id=collect.id, topic_id=topicId).first()
-            if cid is not None:
-                return True
-        return False
-
-    def notice_count():
-        from maple.forums.models import Notice
-        if g.user.is_authenticated:
-            count = Notice.query.filter_by(
-                rece_id=g.user.id, is_read=False).count()
-            if count > 0:
-                return count
-        return None
-
+    @staticmethod
     @cache.memoize(timeout=60)
-    def hot_tags():
-        from maple.tag.models import Tags
-        tags = Tags.query.order_by(Tags.time.desc()).limit(9).all()
-        return tags
-
-    @cache.memoize(timeout=60)
-    def recent_tags():
-        from maple.tag.models import Tags
-        tags = Tags.query.order_by(Tags.time.desc()).limit(12).all()
-        return tags
-
-    def is_online(username):
-        from maple.main.records import load_online_sign_users
-        online_users = load_online_sign_users()
-        if username in online_users:
-            return True
-        return False
-
-    class Title(object):
-        title = setting['title']
-        picture = setting['picture']
-        description = setting['description']
-
+    def get_last_reply(uid):
+        reply = Reply.query.join(Reply.topic).filter(Topic.id == uid).first()
+        return reply
 
 def register_jinja2(app):
+    app.jinja_env.globals['Filters'] = Filters
     app.jinja_env.globals['Title'] = Filters.Title
     app.jinja_env.globals['hot_tags'] = Filters.hot_tags
     app.jinja_env.globals['recent_tags'] = Filters.recent_tags

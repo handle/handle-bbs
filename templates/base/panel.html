@@ -78,7 +78,7 @@
         <h3>{{ text }}</h3>
     </div>
     <div class="panel-body text-center tags">
-        {% set tags = tags() %}
+        {% set tags = Filters().hot_tags() %}
         {% for tag in tags -%}
         <a href="{{ url_for('tag.tag',tag=tag)}}" class="item_node">{{ tag }}</a>
         {%- endfor %}

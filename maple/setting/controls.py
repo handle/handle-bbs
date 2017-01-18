@@ -15,13 +15,14 @@ from maple.extension import db
 
 
 class SettingModel(object):
+    @staticmethod
     def profile(form):
         infor = current_user.infor
         infor.introduce = form.introduce.data
         infor.school = form.school.data
         infor.word = form.word.data
         db.session.commit()
-
+    @staticmethod
     def password(form):
         password = form.password.data
         password_n = form.password_n.data
@@ -31,7 +32,7 @@ class SettingModel(object):
             logout_user()
             return True
         return False
-
+    @staticmethod
     def privacy(form):
         online_status = form.online_status.data
         topic_list = form.topic_list.data
@@ -44,7 +45,7 @@ class SettingModel(object):
         current_user.setting.ntb_list = ntb_list
         current_user.setting.collect_list = collect_list
         db.session.commit()
-
+    @staticmethod
     def babel(form):
         timezone = form.timezone.data
         locale = form.locale.data

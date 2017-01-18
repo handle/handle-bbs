@@ -10,12 +10,21 @@
 #          By:
 # Description:
 # **************************************************************************
-from flask import Blueprint
-from flask_login import login_required
+from flask import Blueprint, g
+from flask_login import current_user
+from maple.common.middleware import get_online
+from maple.forums.forms import SearchForm
 from .views import (IndexView, ForumsView, NoticeView, UserListView, AboutView,
                     HelpView, ContactView, MessageView, OrderView)
 
 site = Blueprint('forums', __name__)
+
+@site.before_request
+def before():
+    g.user = current_user
+    g.search_form=SearchForm()
+    g.get_online = get_online()
+
 
 index_view = IndexView.as_view('index')
 forums_view = ForumsView.as_view('forums')

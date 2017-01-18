@@ -12,16 +12,10 @@
 # **************************************************************************
 from flask import Blueprint, abort, g
 from maple.user.models import User
-from maple.forums.forms import MessageForm
 from .views import (UserView, TopicView, ReplyView, CollectView,
                     CollectListView, FollowerView, FollowingView)
 
 site = Blueprint('user', __name__)
-
-
-@site.before_request
-def before():
-    g.message_form = MessageForm()
 
 
 @site.url_value_preprocessor

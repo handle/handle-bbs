@@ -32,6 +32,9 @@ def register_app(app):
             if current_user.is_superuser:
                 identity.provides.add(RoleNeed('super'))
 
+        if current_user:
+            identity.provides.add(RoleNeed('confirmed'))
+
         if hasattr(current_user, 'topics'):
             for topic in current_user.topics:
                 identity.provides.add(EditTopicNeed(topic.uid))

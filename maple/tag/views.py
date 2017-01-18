@@ -16,7 +16,7 @@ from flask_babelex import gettext as _
 from maple.topic.models import Topic
 from maple.filters import Filters
 from .models import Tags
-from urllib.parse import urljoin
+from urlparse import urljoin
 from werkzeug.utils import escape
 from werkzeug.contrib.atom import AtomFeed
 

@@ -49,6 +49,8 @@ def load_online_users(mode):
     if mode == 1:
         online_users = load_online_all_users()
         high_online = redis_data.hget('online_users', 'high:counts')
+        if not high_online:
+            high_online="0"
         count = len(online_users)
         if int(high_online) < count:
             redis_data.hset('online_users', 'high:counts', count)
@@ -68,6 +70,8 @@ def load_online_users(mode):
         return counts
     if mode == 5:
         high_time = redis_data.hget('online_users', 'high:time')
+        if not high_time:
+            high_time="0"
         return datetime.utcfromtimestamp(int(high_time))
 
 

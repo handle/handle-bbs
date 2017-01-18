@@ -34,7 +34,7 @@ class User(db.Model, UserMixin, ModelMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(49), unique=True)
     email = db.Column(db.String(81), unique=True)
-    password = db.Column(db.String, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     is_superuser = db.Column(db.Boolean, default=False)
     is_confirmed = db.Column(db.Boolean, default=False)
     register_time = db.Column(db.DateTime, default=datetime.now())
@@ -97,6 +97,18 @@ class User(db.Model, UserMixin, ModelMixin):
     def __repr__(self):
         return '<User %r>' % self.username
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
     # @property
     # def password(self):
     #     return "密码不是可读形式!"
@@ -148,10 +160,13 @@ class UserInfor(db.Model):
     # confirmed_time = db.Column(db.DateTime, nullable=True)
     # registered_time = db.Column(db.DateTime, nullable=False)
     # score = db.Column(db.Integer, nullable=False, default=100)
-    avatar = db.Column(db.String)
+    avatar = db.Column(db.String(256))
     word = db.Column(db.Text, nullable=True)
     introduce = db.Column(db.Text, nullable=True)
-    school = db.Column(db.String, nullable=True)
+    school = db.Column(db.String(128), nullable=True)
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return "<UserInfor %r>" % self.id
@@ -172,6 +187,9 @@ class UserSetting(db.Model):
     collect_list = db.Column(db.Integer, nullable=False, default=2)
     locale = db.Column(db.String(32), default='zh')
     timezone = db.Column(db.String(32), default='UTC')
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return "<UserSetting %r>" % self.id

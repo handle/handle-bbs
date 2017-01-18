@@ -10,7 +10,7 @@
 #          By:
 # Description:
 # **************************************************************************
-from flask_wtf import FlaskForm as Form
+from flask_wtf import Form as Form
 from wtforms import SelectField, StringField, TextAreaField
 from wtforms.validators import DataRequired
 from flask_babelex import lazy_gettext as _

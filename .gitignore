@@ -1,5 +1,5 @@
 venv/
-config/
+mapble-bbs/
 avatars/
 migrations/
 backup/
@@ -10,3 +10,4 @@ fabfile.py
 *.pyc
 **/.webassets-cache/
 **/assets/
+dump.rdb

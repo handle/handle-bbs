@@ -29,8 +29,8 @@ def create_app():
         os.path.join(os.path.dirname(__file__), os.pardir, 'static'))
 
     app = Flask(__name__, template_folder=templates, static_folder=static)
-    app.config.from_object('config.config')
-    app.url_map._rules.clear()
+    app.config.from_object('config.production')
+    app.url_map._rules=[]
     app.url_map._rules_by_endpoint.clear()
     app.url_map.default_subdomain = 'forums'
     app.add_url_rule(

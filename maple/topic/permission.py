@@ -76,7 +76,8 @@ class TopicPermission(RestBase):
     def post(self):
         def callback():
             flash(
-                _("You haven't confirm your account,Please confirmed"),
+                _("You haven't confirm your "
+                  ",Please confirmed"),
                 'warning')
             return redirect(url_for('user.user',
                                     user_url=current_user.username))

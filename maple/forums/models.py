@@ -10,9 +10,10 @@
 #          By:
 # Description:
 # **************************************************************************
-from maple.extension import db
 from datetime import datetime
-from sqlalchemy.dialects.postgresql import JSON
+
+from maple.extension import db
+from sqlalchemy.dialects.mysql import JSON
 
 
 class Board(db.Model):

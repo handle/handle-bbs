@@ -21,7 +21,7 @@ from flask_maple.app import App
 from flask_maple.json import CustomJSONEncoder
 from flask_maple.middleware import Middleware
 from flask_maple import Bootstrap, Error, Captcha
-from flask_maple.redis import Redis
+from flask_maple.mabpleredis import MabpleRedis
 from flask_maple.mail import MapleMail
 from flask_maple.rbac import Rbac
 from flask_cache import Cache
@@ -113,7 +113,7 @@ bootstrap = Bootstrap(
     use_auth=True)
 captcha = Captcha()
 error = Error()
-redis_data = Redis(decode_responses=True)
+redis_data = MabpleRedis(decode_responses=True)
 cache = Cache()
 mail = MapleMail()
 principal = Principal()

@@ -5,7 +5,7 @@
 {% import 'base/panel.html' as panel_base %}
 {% from 'base/head.html' import breadcrumb %}
 {% block title -%}
-{%- set n = notice_count() -%}
+{%- set n = Filters().notice_count() -%}
 {%- if n -%}
 ({{ n }})
 {%- endif -%}
@@ -79,7 +79,7 @@
     <a href="{{ url_for('forums.notice')}}"><span class="btn btn-sm btn-primary pull-right">
         {{ _('Notices') }}
         <span class="badge">
-            {%- set n = notice_count() -%}
+            {%- set n = Filters().notice_count() -%}
             {%- if n -%}
             {{ n }}
             {%- endif -%}

@@ -67,6 +67,7 @@ class TopicModel(object):
         top_topics = Topic.query.filter_by(is_top=True).limit(5).all()
         return topics, top_topics
 
+    @staticmethod
     def get_detail(page, topicId, order='time'):
         topic = Topic.query.filter_by(uid=topicId).first_or_404()
         if order == 'like':
@@ -81,6 +82,7 @@ class TopicModel(object):
         RedisData.set_read_count(topic.id)
         return topic, replies
 
+    @staticmethod
     def post(form):
         topic = Topic()
         topic.title = form.title.data

@@ -10,12 +10,13 @@
 #          By:
 # Description:
 # **************************************************************************
+from datetime import datetime, timedelta
+
 from flask_login import login_required, current_user
 from maple.extension import mail, redis_data
 from maple.user.models import User, UserInfor, UserSetting, Role
 from maple.main.models import set_email_send
 from maple.common.response import HTTPResponse
-from datetime import datetime, timedelta
 from flask_maple.auth import (Auth, RegisterBaseView, ConfirmBaseView,
                               ConfirmTokenBaseView)
 

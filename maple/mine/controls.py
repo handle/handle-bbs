@@ -22,6 +22,7 @@ from maple.forums.controls import user as notice_user
 
 
 class CollectDetail(object):
+    @staticmethod
     def post(form, topicId):
         topic = Topic.query.filter_by(uid=topicId).first_or_404()
         for id in form:
@@ -36,7 +37,7 @@ class CollectDetail(object):
                 if topic.author_id != current_user.id:
                     notice_collect(topic)
         return topic
-
+    @staticmethod
     def delete(topicId, collectId):
         topic = Topic.query.filter_by(uid=topicId).first_or_404()
         collect = Collect.query.filter_by(id=collectId).first_or_404()
@@ -45,6 +46,7 @@ class CollectDetail(object):
 
 
 class CollectModel(object):
+    @staticmethod
     def post_data(form):
         collect = Collect()
         collect.name = form.name.data
@@ -54,14 +56,14 @@ class CollectModel(object):
         current_user.following_collects.append(collect)
         db.session.add(collect)
         db.session.commit()
-
+    @staticmethod
     def put_data(form, uid):
         collect = Collect.query.filter_by(id=uid).first_or_404()
         collect.name = form.name.data
         collect.description = form.description.data
         collect.is_privacy = True if form.is_privacy.data == 0 else False
         db.session.commit()
-
+    @staticmethod
     def delete_data(uid):
         collect = Collect.query.filter_by(id=uid).first_or_404()
         db.session.delete(collect)
@@ -69,6 +71,7 @@ class CollectModel(object):
 
 
 class FollowModel(object):
+    @staticmethod
     def post_data(type, id):
         if type == 'tag':
             tag = Tags.query.filter_by(id=id).first_or_404()
@@ -87,7 +90,7 @@ class FollowModel(object):
             collect = Collect.query.filter_by(id=id).first_or_404()
             current_user.following_collects.append(collect)
             db.session.commit()
-
+    @staticmethod
     def delete_data(type, id):
         if type == 'tag':
             tag = Tags.query.filter_by(id=id).first_or_404()
@@ -108,13 +111,14 @@ class FollowModel(object):
 
 
 class LikeModel(object):
+    @staticmethod
     def post_data(uid):
         reply = Reply.query.filter_by(id=uid).first_or_404()
         current_user.likes.append(reply)
         db.session.commit()
         if reply.author_id != current_user.id:
             notice_like(reply)
-
+    @staticmethod
     def delete_data(uid):
         reply = Reply.query.filter_by(id=uid).first_or_404()
         current_user.likes.remove(reply)

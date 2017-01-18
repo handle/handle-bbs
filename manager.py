@@ -7,11 +7,14 @@
 #   Mail:xiyang0807@gmail.com
 #   Created Time: 2016-02-11 13:34:38
 # *************************************************************************
-from flask import url_for
+from flask import url_for, g
+from flask_login import current_user
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from maple import create_app
+from maple.common.middleware import get_online
 from maple.extension import db
+from maple.forums.forms import SearchForm, SortForm, MessageForm
 from maple.user.models import User, UserInfor, UserSetting, Role
 from getpass import getpass
 from werkzeug.security import generate_password_hash
@@ -21,6 +24,13 @@ app = create_app()
 migrate = Migrate(app, db)
 manager = Manager(app)
 
+@app.before_request
+def before():
+    g.user = current_user
+    g.search_form=SearchForm()
+    g.get_online = get_online()
+    g.sort_form = SortForm();
+    g.message_form= MessageForm()
 
 @manager.command
 def runserver():
@@ -32,6 +42,7 @@ def init_db():
     """
     Drops and re-creates the SQL schema
     """
+    db.init_app()
     db.drop_all()
     db.configure_mappers()
     db.create_all()
