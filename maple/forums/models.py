@@ -13,7 +13,7 @@
 from datetime import datetime
 
 from maple.extension import db
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy.dialects.postgresql import JSON
 
 
 class Board(db.Model):
